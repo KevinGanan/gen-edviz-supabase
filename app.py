@@ -4724,11 +4724,12 @@ elif seccion == "Resumen y reportes":
                 """, unsafe_allow_html=True)
                 
                 # Preparar datos
-                merged = df_eval.merge(
-                    df_meta, 
-                    on=["image_id", "tema", "concepto"], 
-                    how="right"
-                )
+                if df_eval.empty:
+                    merged = df_meta.copy()
+                else:
+                    # Usar solo columnas que existen en ambos DataFrames
+                    merge_cols = [c for c in ["image_id", "tema", "concepto"] if c in df_eval.columns and c in df_meta.columns]
+                    merged = df_eval.merge(df_meta, on=merge_cols, how="right")
                 
                 # Limpiar datos
                 df_limpio = merged.copy()
