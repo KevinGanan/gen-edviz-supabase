@@ -1,0 +1,34 @@
+# Secrets y variables de entorno
+.streamlit/secrets.toml
+.env
+*.env
+
+# API Keys
+*api_key*
+*API_KEY*
+
+# Datos locales
+data/
+*.csv
+*.json
+*.png
+*.jpg
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
