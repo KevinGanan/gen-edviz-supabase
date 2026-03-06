@@ -4314,6 +4314,31 @@ elif seccion == "Evaluar (rúbrica 4x4)":
             # Promedio por criterio
             piv = df_img.pivot_table(index="criterio", values="puntaje", aggfunc="mean")
             st.write(piv)
+
+            # Mostrar comentarios por criterio
+            st.markdown("#### 💬 Comentarios por criterio")
+            comentarios_criterio = df_img[["rater", "criterio", "puntaje", "comentario"]].copy()
+            comentarios_criterio = comentarios_criterio[
+                comentarios_criterio["comentario"].notna() & 
+                (comentarios_criterio["comentario"].str.strip() != "")
+            ]
+            if comentarios_criterio.empty:
+                st.info("No hay comentarios registrados aún.")
+            else:
+                for criterio in comentarios_criterio["criterio"].unique():
+                    subset_c = comentarios_criterio[comentarios_criterio["criterio"] == criterio]
+                    with st.expander(f"📝 {criterio.capitalize()}", expanded=True):
+                        for _, row in subset_c.iterrows():
+                            st.markdown(f"""
+                            <div style="background: rgba(139, 92, 246, 0.08); border-radius: 10px; 
+                                        padding: 12px; margin-bottom: 8px;
+                                        border-left: 3px solid #a78bfa;">
+                                <div style="color: #a78bfa; font-size: 0.8rem; margin-bottom: 4px;">
+                                    👤 {row['rater']} — Puntaje: {row['puntaje']}/4
+                                </div>
+                                <div style="color: #e2e8f0; font-size: 0.9rem;">{row['comentario']}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
             
             min_crit = piv["puntaje"].min()
             avg_all = piv["puntaje"].mean()
