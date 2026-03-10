@@ -9,7 +9,7 @@ from pathlib import Path
 
 def generar_imagen(
     prompt: str,
-    size: str = "1024x1024",
+    size: str = "1536x1024",
     model: str = "gpt-image-1.5"
 ) -> dict:
     """
