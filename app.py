@@ -2357,6 +2357,50 @@ elif seccion == "Generador IA":
             import base64
             image_bytes = base64.b64decode(img_data["image_base64"])
             st.image(image_bytes, caption="Imagen generada por GPT-Image 1.5")
+
+            # ========== CHAT DE REFINAMIENTO ==========
+            st.markdown("---")
+            st.markdown("### 🔧 Ajuste de la imagen")
+
+            # Input estilo chat
+            col_input, col_btn = st.columns([11, 1])
+            with col_input:
+                ajuste_texto = st.text_input(
+                    "ajuste",
+                    placeholder="Escribe tu ajuste sobre la imagen...",
+                    label_visibility="collapsed",
+                    key="input_ajuste"
+                )
+            with col_btn:
+                st.markdown("<div style='margin-top: 4px;'>", unsafe_allow_html=True)
+                aplicar_ajuste = st.button("⬆", key="btn_aplicar_ajuste", use_container_width=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            if aplicar_ajuste and ajuste_texto.strip():
+                # Acumular ajustes sobre el prompt original
+                if "prompt_refinado_actual" not in st.session_state:
+                    st.session_state.prompt_refinado_actual = img_data["prompt_original"]
+                
+                prompt_refinado = f"{st.session_state.prompt_refinado_actual}. Ajuste: {ajuste_texto.strip()}"
+                
+                with st.spinner("🎨 Aplicando ajuste..."):
+                    resultado = generar_imagen(
+                        prompt=prompt_refinado,
+                        size="1024x1024"
+                    )
+                    
+                    if resultado["success"]:
+                        st.session_state.prompt_refinado_actual = prompt_refinado
+                        st.session_state.imagen_generada = {
+                            **img_data,
+                            "image_base64": resultado["image_base64"],
+                            "revised_prompt": resultado.get("revised_prompt", prompt_refinado),
+                            "prompt_original": img_data["prompt_original"],
+                            "timestamp": datetime.now().isoformat()
+                        }
+                        rerun()
+                    else:
+                        st.error(f"❌ Error: {resultado.get('error', 'Error desconocido')}")
             
             with st.expander("📋 Detalles de la generación", expanded=True):
                 col_info1, col_info2 = st.columns(2)
@@ -2435,7 +2479,7 @@ elif seccion == "Generador IA":
                             "image_id": image_id,
                             "tema": img_data.get("tema", ""),
                             "concepto": img_data.get("concepto", ""),
-                            "prompt": img_data.get("prompt_original", ""),
+                            "prompt": st.session_state.get("prompt_refinado_actual") or img_data.get("prompt_original", ""),
                             "image_url": public_url,
                             "herramienta": "gpt-image-1.5",
                             "wcag_ratio": round(wcag_val, 2),
