@@ -2375,7 +2375,7 @@ elif seccion == "Generador IA":
                 key="input_ajuste"
             )
 
-            col_space, col_btn = st.columns([6, 1])
+            col_space, col_btn = st.columns([4, 2])
             with col_btn:
                 aplicar_ajuste = st.button("⬆️ Aplicar", key="btn_aplicar_ajuste", use_container_width=True)
 
