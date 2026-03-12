@@ -2362,25 +2362,24 @@ elif seccion == "Generador IA":
             st.markdown("---")
             st.markdown("### 🔧 Ajuste de la imagen")
 
-            # Input estilo chat
-            col_input, col_btn = st.columns([11, 1])
-            with col_input:
-                ajuste_texto = st.text_input(
-                    "ajuste",
-                    placeholder="Escribe tu ajuste sobre la imagen...",
-                    label_visibility="collapsed",
-                    key="input_ajuste"
-                )
+            # Inicializar estado
+            if "prompt_refinado_actual" not in st.session_state:
+                st.session_state.prompt_refinado_actual = img_data["prompt_original"]
+
+            # Textarea con salto de línea + botón debajo
+            ajuste_texto = st.text_area(
+                "ajuste",
+                placeholder="Escribe tu ajuste sobre la imagen...",
+                label_visibility="collapsed",
+                height=80,
+                key="input_ajuste"
+            )
+
+            col_space, col_btn = st.columns([6, 1])
             with col_btn:
-                st.markdown("<div style='margin-top: 4px;'>", unsafe_allow_html=True)
-                aplicar_ajuste = st.button("⬆", key="btn_aplicar_ajuste", use_container_width=True)
-                st.markdown("</div>", unsafe_allow_html=True)
+                aplicar_ajuste = st.button("⬆️ Aplicar", key="btn_aplicar_ajuste", use_container_width=True)
 
             if aplicar_ajuste and ajuste_texto.strip():
-                # Acumular ajustes sobre el prompt original
-                if "prompt_refinado_actual" not in st.session_state:
-                    st.session_state.prompt_refinado_actual = img_data["prompt_original"]
-                
                 prompt_refinado = f"{st.session_state.prompt_refinado_actual}. Ajuste: {ajuste_texto.strip()}"
                 
                 with st.spinner("🎨 Aplicando ajuste..."):
